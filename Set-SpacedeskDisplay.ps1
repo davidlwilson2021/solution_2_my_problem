@@ -47,6 +47,11 @@
 .PARAMETER ConfigPath
     Path to a JSON config file holding presets. Defaults to config.json next to this script.
 
+.PARAMETER List
+    Don't change anything — just list every active display with its GDI name, monitor friendly
+    name, adapter string, primary flag and resolution, marking which one matches. Use this to
+    confirm the spacedesk display is present and to discover the right -Match string.
+
 .PARAMETER PassThru
     Emit an object describing what was found and changed, instead of only writing host text.
 
@@ -75,6 +80,7 @@ param(
     [string] $Match,
     [string] $Profile,
     [string] $ConfigPath = (Join-Path $PSScriptRoot 'config.json'),
+    [switch] $List,
     [switch] $PassThru
 )
 
@@ -390,6 +396,65 @@ function Get-SpacedeskTarget {
     return $null
 }
 
+function Get-ActiveDisplay {
+    <#
+        Enumerate ALL active displays with their GDI name, monitor friendly name, adapter string,
+        primary flag and current resolution. Read-only; used by -List for diagnostics.
+    #>
+    [uint32] $numPaths = 0
+    [uint32] $numModes = 0
+    if ([SpacedeskNative]::GetDisplayConfigBufferSizes(
+            [SpacedeskNative]::QDC_ONLY_ACTIVE_PATHS, [ref]$numPaths, [ref]$numModes) -ne 0) {
+        throw "GetDisplayConfigBufferSizes failed."
+    }
+    $paths = New-Object 'SpacedeskNative+DISPLAYCONFIG_PATH_INFO[]' $numPaths
+    $modes = New-Object 'SpacedeskNative+DISPLAYCONFIG_MODE_INFO[]' $numModes
+    if ([SpacedeskNative]::QueryDisplayConfig(
+            [SpacedeskNative]::QDC_ONLY_ACTIVE_PATHS,
+            [ref]$numPaths, $paths, [ref]$numModes, $modes, [IntPtr]::Zero) -ne 0) {
+        throw "QueryDisplayConfig failed."
+    }
+    $adapters = Get-GdiAdapter
+
+    for ($p = 0; $p -lt $numPaths; $p++) {
+        $path = $paths[$p]
+
+        $src = New-Object SpacedeskNative+DISPLAYCONFIG_SOURCE_DEVICE_NAME
+        $h = $src.header
+        $h.type = [SpacedeskNative]::GET_SOURCE_NAME
+        $h.size = [System.Runtime.InteropServices.Marshal]::SizeOf($src)
+        $h.adapterId = $path.sourceInfo.adapterId
+        $h.id = $path.sourceInfo.id
+        $src.header = $h
+        if ([SpacedeskNative]::DisplayConfigGetDeviceInfo([ref]$src) -ne 0) { continue }
+        $gdiName = $src.viewGdiDeviceName
+
+        $tgt = New-Object SpacedeskNative+DISPLAYCONFIG_TARGET_DEVICE_NAME
+        $h = $tgt.header
+        $h.type = [SpacedeskNative]::GET_TARGET_NAME
+        $h.size = [System.Runtime.InteropServices.Marshal]::SizeOf($tgt)
+        $h.adapterId = $path.targetInfo.adapterId
+        $h.id = $path.targetInfo.id
+        $tgt.header = $h
+        $friendly = ''
+        if ([SpacedeskNative]::DisplayConfigGetDeviceInfo([ref]$tgt) -eq 0) {
+            $friendly = $tgt.monitorFriendlyDeviceName
+        }
+
+        $adapter = $adapters | Where-Object { $_.DeviceName -eq $gdiName } | Select-Object -First 1
+        $res = Get-DisplayResolution -GdiName $gdiName
+
+        [pscustomobject]@{
+            GdiName       = $gdiName
+            FriendlyName  = $friendly
+            AdapterString = if ($adapter) { $adapter.DeviceString } else { $null }
+            IsPrimary     = if ($adapter) { $adapter.IsPrimary } else { $null }
+            Width         = if ($res) { $res.Width } else { $null }
+            Height        = if ($res) { $res.Height } else { $null }
+        }
+    }
+}
+
 function Get-DisplayResolution {
     param([Parameter(Mandatory)][string] $GdiName)
     $dm = New-Object SpacedeskNative+DEVMODE
@@ -599,6 +664,30 @@ function Invoke-SpacedeskSnap {
 if ($MyInvocation.InvocationName -ne '.') {
     $s = Resolve-SnapSettings -Width $Width -Height $Height -Scale $Scale `
                               -Match $Match -Profile $Profile -ConfigPath $ConfigPath
+
+    if ($List) {
+        $rows = @(Get-ActiveDisplay)
+        Write-Host ("Active displays ('{0}' match marked with *):" -f $s.Match) -ForegroundColor Cyan
+        $rows | ForEach-Object {
+            $isMatch = ($_.FriendlyName  -and $_.FriendlyName  -match [regex]::Escape($s.Match)) -or
+                       ($_.AdapterString -and $_.AdapterString -match [regex]::Escape($s.Match))
+            [pscustomobject]@{
+                ' '        = if ($isMatch) { '*' } else { '' }
+                Gdi        = $_.GdiName
+                Friendly   = $_.FriendlyName
+                Adapter    = $_.AdapterString
+                Primary    = $_.IsPrimary
+                Resolution = if ($_.Width) { "$($_.Width)x$($_.Height)" } else { '' }
+            }
+        } | Format-Table -AutoSize
+        if (-not ($rows | Where-Object {
+                ($_.FriendlyName  -and $_.FriendlyName  -match [regex]::Escape($s.Match)) -or
+                ($_.AdapterString -and $_.AdapterString -match [regex]::Escape($s.Match)) })) {
+            Write-Warning ("Nothing matches '{0}'. If the spacedesk display is in the list above under a different name, re-run the snap with -Match '<that name>'. If it isn't listed at all, Windows doesn't see it yet — connect/stream the iPad in the spacedesk viewer first." -f $s.Match)
+        }
+        return
+    }
+
     $result = Invoke-SpacedeskSnap -Width $s.Width -Height $s.Height -Scale $s.Scale -Match $s.Match
     if ($PassThru) { $result }
 }

@@ -81,6 +81,12 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 .\Set-SpacedeskDisplay.ps1 -Width 1376 -Height 1032 -Scale 125
 ```
 
+**Not sure it's detected?** List every active display (read-only) and see which one matches. If the spacedesk display is listed under a different name, pass that name with `-Match`:
+
+```powershell
+.\Set-SpacedeskDisplay.ps1 -List
+```
+
 **Make it automatic** (install a hidden logon task that watches for the display):
 
 ```powershell
