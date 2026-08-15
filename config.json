@@ -1,0 +1,24 @@
+{
+  "matchString": "spacedesk",
+  "defaultProfile": "lan",
+  "profiles": {
+    "lan": {
+      "width": 2752,
+      "height": 2064,
+      "scale": 250,
+      "description": "Wi-Fi / LAN. Native panel resolution (pixel-perfect, zero resampling) at 250% Retina scale. Logical desktop ~1101x826. Best quality; needs a fast link."
+    },
+    "usb": {
+      "width": 1376,
+      "height": 1032,
+      "scale": 125,
+      "description": "USB (Apple Mobile Device Ethernet is ~100 Mbps). Exact half of native, so the panel upscales by a clean 2x (still no blur), at 125% scale. Identical ~1101x826 logical desktop as 'lan', so windows keep their places; one quarter of the pixels to push."
+    }
+  },
+  "_notes": {
+    "panel": "iPad Pro 13-inch (M4): native 2752x2064, exactly 4:3, 264 ppi.",
+    "why_these_numbers": "Only native (2752x2064) and its exact integer fractions map onto the panel without resampling blur. 1376x1032 is exactly half on both axes. No standard 4:3 preset (1024x768, 1280x960, 1600x1200, 2048x1536) divides 2752x2064 evenly.",
+    "scale_steps": "Valid DPI scale values are the Windows steps only: 100,125,150,175,200,225,250,300,350,400,450,500.",
+    "customize": "Edit width/height/scale for your own tablet, or add new profiles. Pass one with -Profile <name>; with no -Profile, 'defaultProfile' above is applied. 'matchString' is honored on every run."
+  }
+}

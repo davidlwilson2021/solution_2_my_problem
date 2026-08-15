@@ -1,0 +1,19 @@
+# Normalize line endings. Text is stored LF in the repo; checked out per-platform.
+* text=auto
+
+# PowerShell is conventionally CRLF on Windows.
+*.ps1  text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+*.cmd  text eol=crlf
+*.bat  text eol=crlf
+
+# Keep these LF everywhere.
+*.md   text eol=lf
+*.json text eol=lf
+*.svg  text eol=lf
+
+# Treat images as binary.
+*.png binary
+*.gif binary
+*.jpg binary

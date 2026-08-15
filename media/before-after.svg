@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="Before and after: a 16:9 mode on a 4:3 iPad panel is letterboxed and blurry; native 2752x2064 is pixel-perfect.">
+  <defs>
+    <filter id="blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.6"/>
+    </filter>
+    <style>
+      .title { fill:#e2e8f0; font-size:22px; font-weight:700; }
+      .h     { fill:#e2e8f0; font-size:16px; font-weight:700; }
+      .muted { fill:#94a3b8; font-size:13px; }
+      .bad   { fill:#fca5a5; font-size:13px; font-weight:600; }
+      .good  { fill:#34d399; font-size:13px; font-weight:600; }
+      .tag   { fill:#38bdf8; font-size:12px; font-weight:700; letter-spacing:1px; }
+    </style>
+  </defs>
+
+  <!-- card -->
+  <rect x="0" y="0" width="900" height="470" rx="18" fill="#0f172a"/>
+  <text x="40" y="52" class="title">Two different knobs, set correctly — for the spacedesk display only</text>
+
+  <!-- ───────────── BEFORE ───────────── -->
+  <text x="120" y="92" class="tag">BEFORE</text>
+  <!-- 4:3 tablet outline (240 x 180) -->
+  <rect x="60" y="104" width="240" height="180" rx="10" fill="#020617" stroke="#334155" stroke-width="2"/>
+  <!-- letterbox bars (16:9 content in a 4:3 frame) -->
+  <rect x="62" y="106" width="236" height="24" fill="#111827"/>
+  <rect x="62" y="258" width="236" height="24" fill="#111827"/>
+  <!-- blurry "text" lines in the used region -->
+  <g filter="url(#blur)" fill="#64748b">
+    <rect x="80"  y="150" width="150" height="7" rx="3"/>
+    <rect x="80"  y="168" width="196" height="7" rx="3"/>
+    <rect x="80"  y="186" width="120" height="7" rx="3"/>
+    <rect x="80"  y="204" width="180" height="7" rx="3"/>
+    <rect x="80"  y="222" width="96"  height="7" rx="3"/>
+  </g>
+  <text x="60" y="312" class="bad">1920×1080 on a 4:3 panel</text>
+  <text x="60" y="332" class="muted">16:9 → letterboxed (wasted glass), and</text>
+  <text x="60" y="350" class="muted">2752 ÷ 1920 = 1.43 → resampled → blurry.</text>
+
+  <!-- arrow -->
+  <g stroke="#38bdf8" stroke-width="3" fill="none">
+    <path d="M 372 194 L 452 194"/>
+  </g>
+  <path d="M 452 194 l -14 -8 v 16 z" fill="#38bdf8"/>
+
+  <!-- ───────────── AFTER ───────────── -->
+  <text x="660" y="92" class="tag">AFTER</text>
+  <rect x="600" y="104" width="240" height="180" rx="10" fill="#020617" stroke="#334155" stroke-width="2"/>
+  <!-- crisp full-panel "text" (no letterbox, no blur) -->
+  <g fill="#cbd5e1">
+    <rect x="620" y="126" width="150" height="6" rx="2"/>
+    <rect x="620" y="142" width="200" height="6" rx="2"/>
+    <rect x="620" y="158" width="120" height="6" rx="2"/>
+    <rect x="620" y="174" width="184" height="6" rx="2"/>
+    <rect x="620" y="190" width="96"  height="6" rx="2"/>
+    <rect x="620" y="206" width="168" height="6" rx="2"/>
+    <rect x="620" y="222" width="140" height="6" rx="2"/>
+    <rect x="620" y="238" width="188" height="6" rx="2"/>
+    <rect x="620" y="254" width="110" height="6" rx="2"/>
+  </g>
+  <text x="600" y="312" class="good">2752×2064 native + 250% scale</text>
+  <text x="600" y="332" class="muted">Fills the 4:3 panel, 1:1 pixels (sharp),</text>
+  <text x="600" y="350" class="muted">DPI scaling makes it readable — not resolution.</text>
+
+  <!-- ───────────── the two knobs ───────────── -->
+  <rect x="40" y="392" width="390" height="56" rx="10" fill="#0b1220" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="60" y="418" class="h">Resolution → sharpness</text>
+  <text x="60" y="438" class="muted">match the panel exactly (or an exact fraction)</text>
+
+  <rect x="470" y="392" width="390" height="56" rx="10" fill="#0b1220" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="490" y="418" class="h">DPI scale → readable size</text>
+  <text x="490" y="438" class="muted">independent of resolution — this is the size knob</text>
+</svg>

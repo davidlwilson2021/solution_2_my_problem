@@ -1,0 +1,48 @@
+# ── Windows OS cruft ─────────────────────────────
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ── PowerShell ───────────────────────────────────
+# PSScriptAnalyzer / Pester output
+TestResults.xml
+testResults.xml
+*.testresults
+coverage.xml
+*.coverage
+
+# PowerShell transcripts (may capture screen content / paths)
+*.transcript
+PowerShell_transcript.*.txt
+*.pssc
+
+# ── Local overrides / secrets (never commit) ─────
+config.local.json
+*.local.ps1
+*.local.psd1
+secrets.ps1
+.env
+.env.*
+
+# ── AI / assistant context files (contain local paths, emails) ──
+CLAUDE.md
+CLAUDE_*.md
+AGENTS.md
+GEMINI.md
+.dev.vars
+
+# ── Editors / IDEs ───────────────────────────────
+.vs/
+.vscode/
+*.user
+*.suo
+*.code-workspace
+
+# ── Misc ─────────────────────────────────────────
+*.log
+tmp/
+temp/
