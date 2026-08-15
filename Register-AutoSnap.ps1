@@ -2,7 +2,7 @@
 <#
 .SYNOPSIS
     Installs (or removes) a scheduled task that runs the spacedesk watcher automatically at
-    logon, hidden, inside your interactive session — the "set it once and forget it" layer.
+    logon, hidden, inside your interactive session - the "set it once and forget it" layer.
 
 .DESCRIPTION
     Registers a Scheduled Task that launches Watch-Spacedesk.ps1 at every logon. The settings

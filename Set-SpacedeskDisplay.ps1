@@ -1,8 +1,8 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Snaps the spacedesk virtual display to a sharp, readable configuration in one shot —
-    native (pixel-perfect) resolution plus a per-monitor DPI scale — without ever touching
+    Snaps the spacedesk virtual display to a sharp, readable configuration in one shot -
+    native (pixel-perfect) resolution plus a per-monitor DPI scale - without ever touching
     your primary monitor and without opening Windows Settings.
 
 .DESCRIPTION
@@ -48,7 +48,7 @@
     Path to a JSON config file holding presets. Defaults to config.json next to this script.
 
 .PARAMETER List
-    Don't change anything — just list every active display with its GDI name, monitor friendly
+    Don't change anything - just list every active display with its GDI name, monitor friendly
     name, adapter string, primary flag and resolution, marking which one matches. Use this to
     confirm the spacedesk display is present and to discover the right -Match string.
 
@@ -514,7 +514,7 @@ function Get-DisplayDpi {
     elseif ($cur -gt $get.maxScaleRel) { $cur = $get.maxScaleRel }
 
     # Clamp every lookup into the 12-value table so a device reporting a wider range than the
-    # standard Windows ladder can never yield an out-of-range ($null) percentage — which would
+    # standard Windows ladder can never yield an out-of-range ($null) percentage - which would
     # silently break the AlreadySet idempotency check.
     $last = $script:DpiVals.Count - 1
     $iRec = [math]::Min([math]::Max($idxRecommended, 0), $last)
@@ -575,7 +575,8 @@ function Resolve-SnapSettings {
 
     $cfg = $null
     if (Test-Path -LiteralPath $ConfigPath) {
-        $cfg = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
+        # Force UTF-8: Windows PowerShell 5.1 would otherwise read a no-BOM file as ANSI.
+        $cfg = Get-Content -LiteralPath $ConfigPath -Raw -Encoding UTF8 | ConvertFrom-Json
     }
     elseif ($Profile) {
         throw "Profile '$Profile' requested but config file not found: $ConfigPath"
@@ -683,7 +684,7 @@ if ($MyInvocation.InvocationName -ne '.') {
         if (-not ($rows | Where-Object {
                 ($_.FriendlyName  -and $_.FriendlyName  -match [regex]::Escape($s.Match)) -or
                 ($_.AdapterString -and $_.AdapterString -match [regex]::Escape($s.Match)) })) {
-            Write-Warning ("Nothing matches '{0}'. If the spacedesk display is in the list above under a different name, re-run the snap with -Match '<that name>'. If it isn't listed at all, Windows doesn't see it yet — connect/stream the iPad in the spacedesk viewer first." -f $s.Match)
+            Write-Warning ("Nothing matches '{0}'. If the spacedesk display is in the list above under a different name, re-run the snap with -Match '<that name>'. If it isn't listed at all, Windows doesn't see it yet - connect/stream the iPad in the spacedesk viewer first." -f $s.Match)
         }
         return
     }
