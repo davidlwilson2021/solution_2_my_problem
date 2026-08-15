@@ -77,6 +77,14 @@ $settings = Resolve-SnapSettings -Width $null -Height $null -Scale $null `
                                  -Match $wMatch -Profile $wProfile `
                                  -ConfigPath (Join-Path $PSScriptRoot 'config.json')
 
+# Single-instance guard (per interactive session): stops a manually-launched watcher and the
+# auto-start entry from both running at once. The OS releases the mutex when this process exits.
+$script:__singleton = New-Object System.Threading.Mutex($false, 'Local\SpacedeskAutoSnapWatcher')
+if (-not $script:__singleton.WaitOne(0)) {
+    Write-Host "Another spacedesk watcher is already running in this session; exiting." -ForegroundColor DarkGray
+    return
+}
+
 $script:LastFire = [datetime]::MinValue
 
 function Test-SpacedeskPresent {

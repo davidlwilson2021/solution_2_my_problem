@@ -87,13 +87,17 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 .\Set-SpacedeskDisplay.ps1 -List
 ```
 
-**Make it automatic** (install a hidden logon task that watches for the display):
+**Make it automatic** (install a hidden watcher that snaps the display on connect):
 
 ```powershell
 .\Register-AutoSnap.ps1                 # event-driven watcher
 .\Register-AutoSnap.ps1 -Mode Poll      # polling fallback if events are flaky
 .\Register-AutoSnap.ps1 -Uninstall      # remove it
 ```
+
+No admin required: it registers a hidden logon **scheduled task** if run elevated, and otherwise
+falls back automatically to a per-user **HKCU `Run`** logon entry. Either way the watcher runs
+un-elevated in your session and re-applies the snap idempotently on every connect.
 
 ### Presets (`config.json`)
 
